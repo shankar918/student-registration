@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function OfferingManager() {
   const [courseTypes, setCourseTypes] = useState(["Individual", "Group", "Special"]);
   const [courses, setCourses] = useState(["English", "Hindi", "Urdu"]);
-
-  const [offerings, setOfferings] = useState([]);
+  const [offerings, setOfferings] = useState(() => {
+    const saved = localStorage.getItem("offerings");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [selectedType, setSelectedType] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("offerings", JSON.stringify(offerings));
+  }, [offerings]);
 
   const addOffering = () => {
     if (selectedType && selectedCourse) {
@@ -28,7 +34,7 @@ export default function OfferingManager() {
   return (
     <div className="container mt-4">
       <div className="card shadow p-4 mx-auto" style={{ maxWidth: "500px" }}>
-        <h3 className="text-center text-primary mb-4"> Course Offerings</h3>
+        <h3 className="text-center text-primary mb-4">Course Offerings</h3>
 
         <div className="mb-3">
           <label className="form-label fw-bold">Select Course Type</label>
@@ -37,7 +43,7 @@ export default function OfferingManager() {
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
           >
-            <option value=""> Choose Type</option>
+            <option value="">Choose Type</option>
             {courseTypes.map((type, index) => (
               <option key={index} value={type}>
                 {type}
