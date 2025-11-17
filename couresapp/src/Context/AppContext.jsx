@@ -1,44 +1,22 @@
-import React, { createContext, useState, useEffect } from "react";
+// src/Context/AppContext.jsx
+
+import { createContext, useState } from "react";
 
 export const AppContext = createContext();
 
-export function AppProvider({ children }) {
-  const [courseTypes, setCourseTypes] = useState(() => {
-    const saved = localStorage.getItem("courseTypes");
-    return saved ? JSON.parse(saved) : ["Individual", "Group", "Special"];
-  });
-
-  const [courses, setCourses] = useState(() => {
-    const saved = localStorage.getItem("courses");
-    return saved ? JSON.parse(saved) : ["Hindi", "English", "Urdu"];
-  });
-
-  const [offerings, setOfferings] = useState(() => {
-    const saved = localStorage.getItem("offerings");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem("courseTypes", JSON.stringify(courseTypes));
-  }, [courseTypes]);
-
-  useEffect(() => {
-    localStorage.setItem("courses", JSON.stringify(courses));
-  }, [courses]);
-
-  useEffect(() => {
-    localStorage.setItem("offerings", JSON.stringify(offerings));
-  }, [offerings]);
+export function AppProvider({ children }) {   // ← Named export (Important)
+  const [courseTypes, setCourseTypes] = useState(["Individual", "Group", "Special"]);
+  const [courses, setCourses] = useState(["English", "Hindi", "Urdu"]);
+  const [offerings, setOfferings] = useState([]);
+  const [registrations, setRegistrations] = useState({});
 
   return (
     <AppContext.Provider
       value={{
-        courseTypes,
-        setCourseTypes,
-        courses,
-        setCourses,
-        offerings,
-        setOfferings,
+        courseTypes, setCourseTypes,
+        courses, setCourses,
+        offerings, setOfferings,
+        registrations, setRegistrations,
       }}
     >
       {children}

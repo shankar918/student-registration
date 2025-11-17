@@ -1,91 +1,57 @@
-import React, { useState, useContext } from "react";
+// src/Components/CourseManager.jsx
+
+import React, { useContext, useState } from "react";
 import { AppContext } from "../Context/AppContext";
 
-export default function OfferingManager() {
-  const { courseTypes, courses, offerings, setOfferings } = useContext(AppContext);
-  const [selectedType, setSelectedType] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
+export default function CourseManager() {
+  const { courses, setCourses } = useContext(AppContext);
+  const [newCourse, setNewCourse] = useState("");
+  const [editIndex, setEditIndex] = useState(null);
 
-  const addOffering = () => {
-    if (selectedType && selectedCourse) {
-      const newOffering = `${selectedType} - ${selectedCourse}`;
-      if (!offerings.includes(newOffering)) {
-        setOfferings([...offerings, newOffering]);
-      } else {
-        alert("Offering already exists!");
-      }
+  const addCourse = () => {
+    if (newCourse.trim() === "") return alert("Enter course name");
+
+    if (editIndex !== null) {
+      const updated = [...courses];
+      updated[editIndex] = newCourse;
+      setCourses(updated);
+      setEditIndex(null);
     } else {
-      alert("Please select both course type and course!");
+      setCourses([...courses, newCourse]);
     }
+
+    setNewCourse("");
   };
 
-  const deleteOffering = (index) => {
-    setOfferings(offerings.filter((_, i) => i !== index));
+  const deleteCourse = (i) => {
+    setCourses(courses.filter((_, index) => index !== i));
+  };
+
+  const startEdit = (i) => {
+    setNewCourse(courses[i]);
+    setEditIndex(i);
   };
 
   return (
-    <div className="container mt-4">
-      <div className="card shadow p-4 mx-auto" style={{ maxWidth: "500px" }}>
-        <h3 className="text-center text-primary mb-4">Course Offerings</h3>
+    <div className="card shadow p-4">
+      <h3>Courses</h3>
 
-        <div className="mb-3">
-          <label className="form-label fw-bold">Select Course Type</label>
-          <select
-            className="form-select"
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-          >
-            <option value="">Choose Type</option>
-            {courseTypes.map((type, index) => (
-              <option key={index} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label fw-bold">Select Course</label>
-          <select
-            className="form-select"
-            value={selectedCourse}
-            onChange={(e) => setSelectedCourse(e.target.value)}
-          >
-            <option value="">-- Choose Course --</option>
-            {courses.map((course, index) => (
-              <option key={index} value={course}>
-                {course}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button className="btn btn-success w-100 mb-3" onClick={addOffering}>
-          Add Offering
-        </button>
-
-        <h5 className="mt-4 text-secondary">Available Offerings</h5>
-        {offerings.length === 0 ? (
-          <p className="text-muted text-center"></p>
-        ) : (
-          <ul className="list-group">
-            {offerings.map((o, index) => (
-              <li
-                key={index}
-                className="list-group-item d-flex justify-content-between align-items-center"
-              >
-                {o}
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => deleteOffering(index)}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="d-flex gap-2 mb-3">
+        <input className="form-control" value={newCourse} onChange={(e) => setNewCourse(e.target.value)} />
+        <button className="btn btn-success" onClick={addCourse}>{editIndex !== null ? "Update" : "Add"}</button>
       </div>
+
+      <ul className="list-group">
+        {courses.map((course, index) => (
+          <li key={index} className="list-group-item d-flex justify-content-between">
+            {course}
+            <div>
+              <button className="btn btn-sm btn-warning me-2" onClick={() => startEdit(index)}>Edit</button>
+              <button className="btn btn-sm btn-danger" onClick={() => deleteCourse(index)}>Delete</button>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

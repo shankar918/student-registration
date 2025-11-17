@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from "react";
+
+
+import React, { useState, useContext } from "react";
+import { AppContext } from "../Context/AppContext";
 
 export default function OfferingManager() {
-  const [courseTypes, setCourseTypes] = useState(["Individual", "Group", "Special"]);
-  const [courses, setCourses] = useState(["English", "Hindi", "Urdu"]);
-  const [offerings, setOfferings] = useState(() => {
-    const saved = localStorage.getItem("offerings");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { courseTypes, courses, offerings, setOfferings } = useContext(AppContext);
   const [selectedType, setSelectedType] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
-
-  useEffect(() => {
-    localStorage.setItem("offerings", JSON.stringify(offerings));
-  }, [offerings]);
 
   const addOffering = () => {
     if (selectedType && selectedCourse) {
@@ -32,68 +26,41 @@ export default function OfferingManager() {
   };
 
   return (
-    <div className="container mt-4">
-      <div className="card shadow p-4 mx-auto" style={{ maxWidth: "500px" }}>
-        <h3 className="text-center text-primary mb-4">Course Offerings</h3>
+    <div className="card shadow p-4">
+      <h3>Course Offerings</h3>
 
-        <div className="mb-3">
-          <label className="form-label fw-bold">Select Course Type</label>
-          <select
-            className="form-select"
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-          >
-            <option value="">Choose Type</option>
-            {courseTypes.map((type, index) => (
-              <option key={index} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label fw-bold">Select Course</label>
-          <select
-            className="form-select"
-            value={selectedCourse}
-            onChange={(e) => setSelectedCourse(e.target.value)}
-          >
-            <option value="">-- Choose Course --</option>
-            {courses.map((course, index) => (
-              <option key={index} value={course}>
-                {course}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button className="btn btn-success w-100 mb-3" onClick={addOffering}>
-          Add Offering
-        </button>
-
-        <h5 className="mt-4 text-secondary">Available Offerings</h5>
-        {offerings.length === 0 ? (
-          <p className="text-muted"></p>
-        ) : (
-          <ul className="list-group">
-            {offerings.map((o, index) => (
-              <li
-                key={index}
-                className="list-group-item d-flex justify-content-between align-items-center"
-              >
-                {o}
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => deleteOffering(index)}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="mb-3">
+        <label>Course Type</label>
+        <select className="form-select" value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
+          <option value="">Choose Type</option>
+          {courseTypes.map((type, i) => (
+            <option key={i} value={type}>{type}</option>
+          ))}
+        </select>
       </div>
+
+      <div className="mb-3">
+        <label>Course</label>
+        <select className="form-select" value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
+          <option value="">Choose Course</option>
+          {courses.map((course, i) => (
+            <option key={i} value={course}>{course}</option>
+          ))}
+        </select>
+      </div>
+
+      <button className="btn btn-success w-100 mb-3" onClick={addOffering}>Add Offering</button>
+
+      <h5>Available Offerings</h5>
+
+      <ul className="list-group">
+        {offerings.map((o, i) => (
+          <li key={i} className="list-group-item d-flex justify-content-between">
+            {o}
+            <button className="btn btn-sm btn-danger" onClick={() => deleteOffering(i)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
